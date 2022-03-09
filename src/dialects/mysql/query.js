@@ -198,7 +198,14 @@ class Query extends AbstractQuery {
         const match = err.message.match(/Duplicate entry '([\s\S]*)' for key '?((.|\s)*?)'?$/);
         let fields = {};
         let message = 'Validation error';
-        const values = match ? match[1].split('-') : undefined;
+        // Some values can include dashes. We can not do much if the value is in the middle or in the left part of the key, 
+        // but we can return correct data for the last field. This code is similar to split(value, limit) function, but does not truncate output
+        // Example:
+        // "12345-https://example-website.com/".split("-") produces ["12345", "https://example", "website.com/"]
+        // "12345-https://example-website.com/".split("-", 2) produces ["12345", "https://example"]
+        // this code produces: ["12345", "https://example-website.com/"]
+        const values = match ? match[1].split('-').reduce(
+          (acc, c) => (acc.length < uniqueKey.fields.length ? [...acc, c] : (acc[acc.length-1] += '-' + c, acc)), []) : undefined;
         const fieldKey = match ? match[2] : undefined;
         const fieldVal = match ? match[1] : undefined;
         const uniqueKey = this.model && this.model.uniqueKeys[fieldKey];
