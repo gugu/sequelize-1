@@ -6,5 +6,8 @@
     ":semanticCommitScopeDisabled"
   ],
   "semanticCommitType": "meta",
-  "ignorePaths": [ "dev/**/oldest/docker-compose.yml" ]
+  "ignorePaths": [
+    "dev/**/oldest/docker-compose.yml"
+  ],
+  "minimumReleaseAge": "24 hours"
 }
